@@ -20,14 +20,15 @@ const requestHandler = (req, res) => {
 
         return req.on('end', () => {
             const parsedBody = Buffer.concat(body).toString();
-            const message = parsedBody.split('=')[1];
+            const message = parsedBody.split('=')[0];
             fs.writeFile('message.txt', message, err => {
                 //
             });
+            console.log(message)
             res.statusCode = 302;
             res.setHeader('Location', '/');
             return res.end();
-            console.log(message)
+
             // const hey = "mera nam hai rohit";
             // const result = hey.split(" ");
             // console.log(result);
