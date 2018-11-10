@@ -13,7 +13,21 @@ const server = http.createServer((req, res) => {
         return res.end();
     }
     if (url === '/message' && method === 'POST') {
-        fs.writeFileSync('message.txt', 'dummy');
+        const body = [];
+        req.on('data', (chunk) => {
+            console.log(chunk);
+            body.push(chunk);
+        })
+
+        req.on('end', () => {
+            const parsedBody = Buffer.concat(body).toString();
+            const message = parsedBody.split('=')[1];
+            fs.writeFileSync('message.txt', message);
+            console.log(message)
+            // const hey = "mera nam hai rohit";
+            // const result = hey.split(" ");
+            // console.log(result);
+        })
         res.statusCode = 302;
         res.setHeader('Location', '/');
         return res.end();
