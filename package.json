@@ -19,5 +19,9 @@
   "homepage": "https://github.com/ip127001/Node#readme",
   "devDependencies": {
     "nodemon": "^1.18.6"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
   }
 }
