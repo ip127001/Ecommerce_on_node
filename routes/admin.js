@@ -9,7 +9,10 @@ const products = [];
 const dirName = require('../util/path')
 
 router.get('/add-product', (req, res, next) => {
-    res.sendFile(path.join(dirName, 'views', 'add-product.html'));
+    res.render('add-product', {
+        pageTitle: 'Add-Product'
+    })
+    // res.sendFile(path.join(dirName, 'views', 'add-product.html'));
 })
 
 router.post('/product', (req, res) => {
