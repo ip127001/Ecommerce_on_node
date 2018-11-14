@@ -6,6 +6,9 @@ const bodyParser = require('body-parser')
 
 const app = express();
 
+app.set('view engine', 'pug');
+app.set('views', 'views');
+
 const adminRoute = require('./routes/admin');
 const shopRoute = require('./routes/shop');
 
@@ -18,7 +21,7 @@ app.use('/admin', adminRoute.routes);
 app.use(shopRoute);
 
 app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    res.status(404).render('404');
 });
 
 app.listen(3000);

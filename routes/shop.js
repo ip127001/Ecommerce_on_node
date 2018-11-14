@@ -8,8 +8,14 @@ const dirName = require('../util/path')
 const adminData = require('./admin')
 
 router.get('/', (req, res, next) => {
-    console.log(adminData.products);
-    res.sendFile(path.join(dirName, 'views', 'shop.html'));
+    const products = adminData.products;
+    res.render('shop', {
+        prods: products,
+        docTitle: 'shop'
+    });
+
+    // console.log(adminData.products);
+    // res.sendFile(path.join(dirName, 'views', 'shop.html'));
 })
 
 module.exports = router;

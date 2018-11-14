@@ -50,34 +50,17 @@ main {
     margin: auto;
 }
 
-.form-control {
-    margin: 1rem o;
-}
-
-.form-control label,
-.form-control input {
-    display: block;
-    width: 100%;
-    margin: 1rem 0;
-}
-
-.form-control input {
-    border: 1px solid rebeccapurple;
-    font: inherit;
-    border-radius: 3px;
-}
-
 button {
     font: inherit;
     border: 1px solid black;
     background: white;
     border-radius: 3px;
     cursor: pointer;
-    color: blue;
+    color: rgb(26, 133, 88);
 }
 
 button:hover,
 button:active {
-    background: red;
+    background: blueviolet;
     color: white;
 }
