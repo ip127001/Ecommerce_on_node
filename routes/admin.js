@@ -10,7 +10,8 @@ const dirName = require('../util/path')
 
 router.get('/add-product', (req, res, next) => {
     res.render('add-product', {
-        pageTitle: 'Add-Product'
+        pageTitle: 'Add-Product',
+        path: '/admin/add-product'
     })
     // res.sendFile(path.join(dirName, 'views', 'add-product.html'));
 })
