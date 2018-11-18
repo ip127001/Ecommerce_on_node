@@ -7,11 +7,7 @@ const expressHbs = require('express-handlebars')
 
 const app = express();
 
-app.engine('handlebars', expressHbs({
-    layoutsDir: 'views/layouts/',
-    defaultLayout: 'main-layout'
-}));
-app.set('view engine', 'handlebars');
+app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 const adminRoute = require('./routes/admin');
@@ -32,4 +28,4 @@ app.use((req, res, next) => {
     });
 });
 
-app.listen(3000);
+app.listen(8080);
