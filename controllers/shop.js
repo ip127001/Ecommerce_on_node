@@ -2,13 +2,13 @@ const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
     Product.fetchAll((products) => {
+        console.log(products);
         res.render('shop/product-list', {
             prods: products,
             pageTitle: 'All products',
             path: '/products'
         });
     });
-    // console.log(adminData.products);
     // res.sendFile(pa th.join(dirName, 'views', 'shop.html'));
 };
 
