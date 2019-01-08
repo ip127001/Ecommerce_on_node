@@ -36,7 +36,7 @@ module.exports = class Cart {
             // add new product / increase quantity
             cart.totalPrice = cart.totalPrice + +productPrice;
             fs.writeFile(p, JSON.stringify(cart), err => {
-                console.log('error in cart.js', err);
+                console.log('error in adding product in  cart.js', err);
             });
         });
     }
@@ -49,15 +49,26 @@ module.exports = class Cart {
                 const updatedCart = { ...JSON.parse(fileContent)
                 };
                 const product = updatedCart.products.find(prod => prod.id === id);
-                const startIndex = updatedCart.products.indexOf(product);
-                updatedCart.products = updatedCart.products.slice(startIndex, startIndex + 1);
-
-                // updatedCart.products = updatedCart.products.filter(prod => prod.id !== id);
+                if (!product) {
+                    return;
+                }
+                updatedCart.products = updatedCart.products.filter(prod => prod.id !== id);
                 updatedCart.totalPrice = updatedCart.totalPrice - (product.qty * productPrice);
 
                 fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
-                    if (err) console.log(err);
+                    if (err) console.log("error in deleting product", err);
                 })
+            }
+        })
+    }
+
+    static getCart(cb) {
+        fs.readFile(p, (err, fileContent) => {
+            const cart = JSON.parse(fileContent);
+            if (err) {
+                cb(null)
+            } else {
+                cb(cart)
             }
         })
     }

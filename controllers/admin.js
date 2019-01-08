@@ -44,7 +44,6 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-    console.log(req.body)
     const prodId = req.body.productId;
     const updatedTitle = req.body.title;
     const updatedImageUrl = req.body.imageUrl;
@@ -56,7 +55,6 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-    console.log('get - 2')
     Product.fetchAll(products => {
         res.render('admin/products', {
             prods: products,
@@ -67,7 +65,6 @@ exports.getProducts = (req, res, next) => {
 }
 
 exports.postDeleteProduct = (req, res, next) => {
-    console.log(req.body.productId);
     const prodId = req.body.productId;
     Product.deleteById(prodId);
     res.redirect('/admin/products');
