@@ -19,7 +19,7 @@ exports.postAddProduct = (req, res) => {
     newProduct.save();
 
     console.log('new added product= ', req.body);
-    res.render('/products');
+    res.redirect('/admin/products');
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -64,4 +64,11 @@ exports.getProducts = (req, res, next) => {
             path: '/admin/products'
         })
     })
+}
+
+exports.postDeleteProduct = (req, res, next) => {
+    console.log(req.body.productId);
+    const prodId = req.body.productId;
+    Product.deleteById(prodId);
+    res.redirect('/admin/products');
 }
