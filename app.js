@@ -14,7 +14,7 @@ app.set('views', 'views');
 const errorController = require('./controllers/error');
 
 const adminRoutes = require('./routes/admin');
-// const shopRoutes = require('./routes/shop');
+const shopRoutes = require('./routes/shop');
 
 app.use(express.static(path.join(__dirname, '/public')))
 
@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.use('/admin', adminRoutes);
-// app.use(shopRoutes);
+app.use(shopRoutes);
 
 app.use((req, res, next) => {
     next();
