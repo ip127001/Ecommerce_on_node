@@ -1,26 +1,26 @@
-// const getDb = require('../util/database').getDb;
+const getDb = require('../util/database').getDb;
 
-// class Product {
-//     constructor(title, imageUrl, price, description) {
-//         this.title = title;
-//         this.imageUrl = imageUrl;
-//         this.price = price;
-//         this.description = description;
-//     }
+class Product {
+    constructor(title, imageUrl, price, description) {
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.price = price;
+        this.description = description;
+    }
 
-//     save() {
-//         const db = getDb();
-//         return db.collection('products')
-//             .insertOne(this)
-//             .then(result => {
-//                 console.log('created product');
-//                 console.log(result)
-//             })
-//             .catch(err => {
-//                 console.log(err)
-//                 throw err;
-//             });
-//     }
-// }
+    save() {
+        const db = getDb();
+        return db.collection('products')
+            .insertOne(this)
+            .then(result => {
+                console.log('created product');
+                console.log(result)
+            })
+            .catch(err => {
+                console.log(err)
+                throw err;
+            });
+    }
+}
 
-// module.exports = Product;
+module.exports = Product;
