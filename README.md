@@ -12,6 +12,7 @@
 customer - shop 
 customer - products
 customer - cart
+customer - order
 admin - add product
 admin - products(edit/delete)
 ```
