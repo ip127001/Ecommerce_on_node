@@ -107,6 +107,11 @@ main {
   color: white;
 }
 
+.danger:hover {
+  background-color: white;
+  color: red;
+}
+
 .centered {
   text-align: center;
 }
