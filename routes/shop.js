@@ -9,11 +9,11 @@ const shopController = require('../controllers/shop')
 // const dirName = require('../util/path');
 // const adminData = require('./admin');
 
-// router.get('/', shopController.getIndex);
+router.get('/', shopController.getIndex);
 
-// router.get('/products', shopController.getProducts);
+router.get('/products', shopController.getProducts);
 
-// router.get('/products/:productId', shopController.getProductDetails);
+router.get('/products/:productId', shopController.getProductDetails);
 
 // router.get('/cart', shopController.getCart);
 

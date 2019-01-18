@@ -24,9 +24,10 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.use((req, res, next) => {
-    User.findById('5c41262131c40e44f2c77850')
+    User.findById('5c424a56bfd7b0446ac53b8f')
         .then(user => {
-            req.user = new User(user.name, user.email, user.cart, user._id);
+            console.log("user", user)
+            req.user = user; // user = full mongoose model all functionality added
             next();
         })
         .catch(err => {
@@ -40,8 +41,20 @@ app.use(shopRoutes);
 app.use(errorController.error404);
 
 mongoose
-    .connect('mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/test?retryWrites=true')
+    .connect('mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop?retryWrites=true')
     .then(result => {
+        User.findOne().then(user => {
+            if (!user) {
+                const user = new User({
+                    name: 'rohit',
+                    email: 'geekrk.01@gmail.com',
+                    cart: {
+                        items: []
+                    }
+                })
+                user.save();
+            }
+        })
         app.listen(3000);
     })
     .catch(err => console.log(err));
