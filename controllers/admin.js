@@ -71,7 +71,7 @@ exports.postEditProduct = (req, res, next) => {
             return product.save();
         })
         .then(result => {
-            console.log('the updated product', result);
+            // console.log('the updated product', result);
             res.redirect('/admin/products');
         })
         .catch(err => {
@@ -84,7 +84,7 @@ exports.getProducts = (req, res, next) => {
         // .select('title price')
         // .populate('userId', 'name') // populate certain field with all the detailed information
         .then(products => {
-            console.log(products);
+            // console.log(products);
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'Admin Products',

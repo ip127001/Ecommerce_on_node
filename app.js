@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({
 app.use((req, res, next) => {
     User.findById('5c424a56bfd7b0446ac53b8f')
         .then(user => {
-            console.log("user", user)
+            // console.log("user", user)
             req.user = user; // user = full mongoose model all functionality added
             next();
         })

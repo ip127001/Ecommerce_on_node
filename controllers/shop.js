@@ -3,7 +3,7 @@ const Product = require('../models/product');
 exports.getProducts = (req, res, next) => {
     Product.find()
         .then(products => {
-            console.log('products from getProducts', products);
+            // console.log('products from getProducts', products);
             res.render('shop/product-list', {
                 prods: products,
                 pageTitle: 'All products',
@@ -46,19 +46,21 @@ exports.getIndex = (req, res, next) => {
         });
 };
 
-// exports.getCart = (req, res, next) => {
-//     req.user
-//         .()
-//         .then(products => {
-//             res.render('shop/cart', {
-//                 path: '/cart',
-//                 pageTitle: 'Your Cart',
-//                 products: products
-//             });
-//         })
-//         .catch(err => console.log(err));
+exports.getCart = (req, res, next) => {
+    req.user
+        .populate('cart.items.productId')
+        .execPopulate()
+        .then(user => {
+            const products = user.cart.items;
+            res.render('shop/cart', {
+                path: '/cart',
+                pageTitle: 'Your Cart',
+                products: products
+            });
+        })
+        .catch(err => console.log(err));
 
-// }
+}
 
 exports.postCart = (req, res, next) => {
     const prodId = req.body.productId;
