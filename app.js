@@ -8,7 +8,6 @@ const session = require('express-session')
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 const errorController = require('./controllers/error');
-
 const User = require('./models/user');
 
 const MONGODB_URI = 'mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop';
@@ -31,7 +30,7 @@ app.use(bodyParser.urlencoded({
     extended: false
 }))
 app.use(express.static(path.join(__dirname, '/public')))
-app.use(session({
+app.use(session({ // cookie setting and reading for us in browser
     secret: 'my secret',
     resave: false,
     saveUninitialized: false,
@@ -39,11 +38,14 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
-    User.findById('5c424a56bfd7b0446ac53b8f')
+    // console.log('session user', req.session.user);
+    if (!req.session.user) {
+        return next();
+    }
+    User.findById(req.session.user._id)
         .then(user => {
-            // console.log("user", user)
-            req.user = user; // user = full mongoose model all functionality added
-            next();
+            req.user = user;
+            next()
         })
         .catch(err => {
             console.log(err);
