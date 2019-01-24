@@ -61,18 +61,6 @@ app.use(errorController.error404);
 mongoose
     .connect('mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop?retryWrites=true')
     .then(result => {
-        User.findOne().then(user => {
-            if (!user) {
-                const user = new User({
-                    name: 'rohit',
-                    email: 'geekrk.01@gmail.com',
-                    cart: {
-                        items: []
-                    }
-                })
-                user.save();
-            }
-        })
         app.listen(3000);
     })
     .catch(err => console.log(err));
