@@ -15,10 +15,8 @@ customer - cart
 customer - order
 admin - add product
 admin - products(edit/delete)
+auth - login
+auth - signup
 ```
-
-## Task
-- [ ] add database
-- [ ] email module
 
 https://prezi.com/view/ihFKSXz01oSRKPlleUHW/
