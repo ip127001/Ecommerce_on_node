@@ -120,9 +120,15 @@ main {
 
 .user-message {
   margin: auto;
-  width: 90%;
+  text-align: center;
+  width: 30%;
   border: 1px solid rgb(6, 64, 110);
   background: rgb(124, 124, 211);
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 3rem;
+}
+
+.user-message--error {
+  border-color: red;
+  background: rgb(229, 130, 130);
 }
