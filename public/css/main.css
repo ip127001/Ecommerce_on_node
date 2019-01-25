@@ -121,11 +121,11 @@ main {
 .user-message {
   margin: auto;
   text-align: center;
-  width: 30%;
+  width: 50%;
   border: 1px solid rgb(6, 64, 110);
   background: rgb(124, 124, 211);
-  padding: 0.5rem;
-  border-radius: 3rem;
+  padding: 4px;
+  border-radius: 5px;
 }
 
 .user-message--error {

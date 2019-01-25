@@ -18,9 +18,16 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.getSignup = (req, res, next) => {
+    let message = req.flash('error');
+    if (message.length > 0) {
+        message = message[0]
+    } else {
+        message = null;
+    }
     res.render('auth/signup', {
         path: '/signup',
-        pageTitle: 'Signup'
+        pageTitle: 'Signup',
+        errorMessage: message
     });
 }
 
@@ -48,6 +55,7 @@ exports.postLogin = (req, res, next) => {
                             res.redirect('/');
                         })
                     }
+                    req.flash('error', 'password is wrong');
                     res.redirect('/login');
                 })
                 .catch(err => {
@@ -69,6 +77,7 @@ exports.postSignup = (req, res, next) => {
         })
         .then(userDoc => {
             if (userDoc) {
+                req.flash('error', 'user already exist');
                 return res.redirect('/signup');
             }
             return bcrypt.hash(password, 12) // (string, salt value) how many rounds of hashing should be applied  //async task
