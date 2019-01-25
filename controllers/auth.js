@@ -4,18 +4,30 @@ const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
     // const isLoggedIn = req.get('Cookie').split(';')[1].trim().split('=')[1] === 'true';
+    let message = req.flash('error');
+    if (message.length > 0) {
+        message = message[0]
+    } else {
+        message = null;
+    }
     res.render('auth/login', {
         path: '/login/',
         pageTitle: 'Login',
-        isAuthenticated: false
+        errorMessage: message
     });
 };
 
 exports.getSignup = (req, res, next) => {
+    let message = req.flash('error');
+    if (message.length > 0) {
+        message = message[0]
+    } else {
+        message = null;
+    }
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'Signup',
-        isAuthenticated: false
+        errorMessage: message
     });
 }
 
@@ -30,6 +42,7 @@ exports.postLogin = (req, res, next) => {
         })
         .then(user => {
             if (!user) {
+                req.flash('error', 'Invalid email or user does not exist');
                 return res.redirect('/login');
             }
             bcrypt.compare(password, user.password)
@@ -42,6 +55,7 @@ exports.postLogin = (req, res, next) => {
                             res.redirect('/');
                         })
                     }
+                    req.flash('error', 'password is wrong');
                     res.redirect('/login');
                 })
                 .catch(err => {
@@ -63,6 +77,7 @@ exports.postSignup = (req, res, next) => {
         })
         .then(userDoc => {
             if (userDoc) {
+                req.flash('error', 'user already exist');
                 return res.redirect('/signup');
             }
             return bcrypt.hash(password, 12) // (string, salt value) how many rounds of hashing should be applied  //async task
