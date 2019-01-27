@@ -61,7 +61,8 @@ exports.getNewPassword = (req, res, next) => {
                 path: '/new-password',
                 pageTitle: 'New Password',
                 errorMessage: message,
-                userId: user._id.toString() // objectId to real string
+                userId: user._id, // objectId to real string
+                passwordToken: token
             });
         })
         .catch(err => {
@@ -196,7 +197,6 @@ exports.postReset = (req, res, next) => {
                 return user.save();
             })
             .then(result => {
-                console.log(result);
                 res.redirect('/login');
                 return transporter.sendMail({
                     to: req.body.email,
@@ -211,6 +211,52 @@ exports.postReset = (req, res, next) => {
             });
     })
 }
+
+exports.postNewPassword = (req, res, next) => {
+    const newPassword = req.body.password;
+    const userId = req.body.userId;
+    const passwordToken = req.body.passwordToken;
+    let resetUser;
+
+    User.findOne({
+            resetToken: passwordToken,
+            resetTokenExpiration: {
+                $gt: Date.now()
+            },
+            _id: userId
+        })
+        .then(user => {
+            resetUser = user;
+            return bcrypt.hash(newPassword, 12)
+        })
+        .then(hashedPassword => {
+            resetUser.password = hashedPassword;
+            resetUser.resetToken = undefined;
+            resetUser.resetTokenExpiration = undefined;
+            return resetUser.save()
+        })
+        .then(result => {
+            console.log('result of reset password = ', result);
+            const pass = result.password;
+            res.redirect('/login');
+            return transporter.sendMail({
+                to: resetUser.email,
+                from: 'shop@node-complete.com',
+                subject: 'Password reset',
+                html: `
+                <div style="text-align:center; border: 1px solid black; padding: 30px;">
+                    <h1>you have successfully changed your password! ${pass}</h1>
+                    <p>don't share your password with others!! :)</p>
+                    <br>
+                </div>`
+            })
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+
 
 /*
 Secure
