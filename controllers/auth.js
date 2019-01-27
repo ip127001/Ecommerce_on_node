@@ -1,6 +1,16 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 const User = require('../models/user');
+
+const transporter = nodemailer.createTransport(sendgridTransport({
+    auth: {
+        api_key: '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'
+    }
+}));
+
 
 exports.getLogin = (req, res, next) => {
     // const isLoggedIn = req.get('Cookie').split(';')[1].trim().split('=')[1] === 'true';
@@ -93,7 +103,20 @@ exports.postSignup = (req, res, next) => {
                 })
                 .then(result => {
                     res.redirect('/login');
+                    return transporter.sendMail({
+                        to: email,
+                        from: 'shop@node-complete.com',
+                        subject: 'signup succeeded!',
+                        html: `<div style="text-align:center; border: 1px solid black; padding: 30px;">
+                                    <h1>you successfully signed up!</h1>
+                                    <br>
+                                    <button style="background: blue">let's start</button>
+                                </div>`
+                    });
                 })
+                .catch(err => {
+                    console.log(err);
+                });
         })
         .catch(err => {
             console.log(err);
@@ -107,7 +130,59 @@ exports.postLogout = (req, res, next) => {
 }
 
 
+exports.getReset = (req, res, next) => {
+    let message = req.flash('error');
 
+    if (message.length > 0) {
+        message = message[0];
+    } else {
+        message = null;
+    }
+
+    res.render('auth/reset', {
+        path: '/reset',
+        pageTitle: 'Reset Password',
+        errorMessage: message
+    });
+};
+
+
+exports.postReset = (req, res, next) => {
+    crypto.randomBytes(32, (err, buffer) => {
+        if (err) {
+            console.log(err)
+            return res.redirect('/reset');
+        }
+        const token = buffer.toString('hex'); //hexadecimal to ascii characters
+
+        User.findOne({
+                email: req.body.email
+            })
+            .then(user => {
+                if (!user) {
+                    req.flash('error', 'No account with that email found')
+                    return res.redirect('/reset');
+                }
+                user.resetToken = token;
+                user.resetTokenExpiration = Date.now() + 3600000;
+                return user.save();
+            })
+            .then(result => {
+                console.log(result);
+                res.redirect('/login');
+                return transporter.sendMail({
+                    to: req.body.email,
+                    from: 'shop@node-complete.com',
+                    subject: 'Password reset',
+                    html: `<p>You request a password reset</p>
+                        <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>`
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    })
+}
 
 /*
 Secure
