@@ -22,11 +22,32 @@ router.post(
     '/signup',
     [check('email')
         .isEmail()
-        .withMessage('Please enter a valid email'),
-        body('password', 'enter a password of length atleast 5 with numbers and text only')
+        .withMessage('Please enter a valid email')
+        .custom((value, {
+            req
+        }) => {
+            if (value === 'test@test.com') {
+                throw new Error('This email is forbidden')
+            }
+            return true;
+        }),
+        body(
+            'password',
+            'enter a password of length atleast 5 with numbers and text only'
+        )
         .isLength({
             min: 5
-        }).isAlphanumeric()
+        }).isAlphanumeric(),
+
+        body('confirmPassword')
+        .custom((value, {
+            req
+        }) => {
+            if (value !== req.body.password) {
+                throw new Error('password do not match');
+            }
+            return true;
+        })
     ],
     authController.postSignup);
 
