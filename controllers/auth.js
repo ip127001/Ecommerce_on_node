@@ -26,7 +26,12 @@ exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/login/',
         pageTitle: 'Login',
-        errorMessage: message
+        errorMessage: message,
+        oldInput: {
+            email: '',
+            password: ''
+        },
+        validationErrors: []
     });
 };
 
@@ -89,10 +94,15 @@ exports.postLogin = (req, res, next) => {
 
     if (!errors.isEmpty()) {
         console.log(errors.array());
-        return res.status(422).render('auth/signup', {
-            path: '/signup',
-            pageTitle: 'Signup',
-            errorMessage: errors.array()[0].msg
+        return res.status(422).render('auth/login', {
+            path: '/login',
+            pageTitle: 'Login',
+            errorMessage: errors.array()[0].msg,
+            oldInput: {
+                email: email,
+                password: password
+            },
+            validationErrors: errors.array()
         });
     }
 
@@ -101,8 +111,16 @@ exports.postLogin = (req, res, next) => {
         })
         .then(user => {
             if (!user) {
-                req.flash('error', 'Invalid email or user does not exist');
-                return res.redirect('/login');
+                return res.status(422).render('auth/login', {
+                    path: '/login',
+                    pageTitle: 'Login',
+                    errorMessage: `user doesn't exist`,
+                    oldInput: {
+                        email: email,
+                        password: password
+                    },
+                    validationErrors: errors.array()
+                });
             }
             bcrypt.compare(password, user.password)
                 .then(doMatch => {
@@ -114,8 +132,16 @@ exports.postLogin = (req, res, next) => {
                             res.redirect('/');
                         })
                     }
-                    req.flash('error', 'password is wrong');
-                    res.redirect('/login');
+                    return res.status(422).render('auth/login', {
+                        path: '/login',
+                        pageTitle: 'Login',
+                        errorMessage: 'password is wrong',
+                        oldInput: {
+                            email: email,
+                            password: password
+                        },
+                        validationErrors: errors.array()
+                    });
                 })
                 .catch(err => {
                     res.redirect('/login');
