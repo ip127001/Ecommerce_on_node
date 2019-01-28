@@ -20,9 +20,14 @@ router.get('/reset/:token', authController.getNewPassword);
 
 router.post(
     '/signup',
-    check('email')
-    .isEmail()
-    .withMessage('Please enter a valid email'),
+    [check('email')
+        .isEmail()
+        .withMessage('Please enter a valid email'),
+        body('password', 'enter a password of length atleast 5 with numbers and text only')
+        .isLength({
+            min: 5
+        }).isAlphanumeric()
+    ],
     authController.postSignup);
 
 router.post('/logout', authController.postLogout);
