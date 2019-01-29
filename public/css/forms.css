@@ -19,6 +19,7 @@
     outline-color: #00695c;
 }
 
-.form-control input.invalid {
+.form-control input.invalid,
+.form-control textarea.invalid {
     border: 1.5px solid rgb(233, 43, 43);
 }
