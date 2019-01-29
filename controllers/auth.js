@@ -2,6 +2,9 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
+const {
+    validationResult
+} = require('express-validator/check') //gather error thrown by isEmail()
 
 const User = require('../models/user');
 
@@ -23,7 +26,12 @@ exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/login/',
         pageTitle: 'Login',
-        errorMessage: message
+        errorMessage: message,
+        oldInput: {
+            email: '',
+            password: ''
+        },
+        validationErrors: []
     });
 };
 
@@ -37,7 +45,13 @@ exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'Signup',
-        errorMessage: message
+        errorMessage: message,
+        oldInput: {
+            email: '',
+            password: '',
+            confirmPassword: ''
+        },
+        validationErrors: []
     });
 }
 
@@ -76,13 +90,37 @@ exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        console.log(errors.array());
+        return res.status(422).render('auth/login', {
+            path: '/login',
+            pageTitle: 'Login',
+            errorMessage: errors.array()[0].msg,
+            oldInput: {
+                email: email,
+                password: password
+            },
+            validationErrors: errors.array()
+        });
+    }
+
     User.findOne({
             email: email
         })
         .then(user => {
             if (!user) {
-                req.flash('error', 'Invalid email or user does not exist');
-                return res.redirect('/login');
+                return res.status(422).render('auth/login', {
+                    path: '/login',
+                    pageTitle: 'Login',
+                    errorMessage: `user doesn't exist`,
+                    oldInput: {
+                        email: email,
+                        password: password
+                    },
+                    validationErrors: errors.array()
+                });
             }
             bcrypt.compare(password, user.password)
                 .then(doMatch => {
@@ -94,8 +132,16 @@ exports.postLogin = (req, res, next) => {
                             res.redirect('/');
                         })
                     }
-                    req.flash('error', 'password is wrong');
-                    res.redirect('/login');
+                    return res.status(422).render('auth/login', {
+                        path: '/login',
+                        pageTitle: 'Login',
+                        errorMessage: 'password is wrong',
+                        oldInput: {
+                            email: email,
+                            password: password
+                        },
+                        validationErrors: errors.array()
+                    });
                 })
                 .catch(err => {
                     res.redirect('/login');
@@ -109,47 +155,51 @@ exports.postLogin = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
 
-    User.findOne({
-            email: email
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        console.log(errors.array());
+        return res.status(422).render('auth/signup', {
+            path: '/signup',
+            pageTitle: 'Signup',
+            errorMessage: errors.array()[0].msg,
+            oldInput: {
+                email: email,
+                password: password,
+                confirmPassword: req.body.confirmPassword
+            },
+            validationErrors: errors.array()
+        });
+    }
+
+    bcrypt.hash(password, 12) // (string, salt value) how many rounds of hashing should be applied  //async task
+        .then(hashedPassword => {
+            const user = new User({
+                email: email,
+                password: hashedPassword,
+                cart: {
+                    items: []
+                }
+            });
+            return user.save();
         })
-        .then(userDoc => {
-            if (userDoc) {
-                req.flash('error', 'user already exist');
-                return res.redirect('/signup');
-            }
-            return bcrypt.hash(password, 12) // (string, salt value) how many rounds of hashing should be applied  //async task
-                .then(hashedPassword => {
-                    const user = new User({
-                        email: email,
-                        password: hashedPassword,
-                        cart: {
-                            items: []
-                        }
-                    });
-                    return user.save();
-                })
-                .then(result => {
-                    res.redirect('/login');
-                    return transporter.sendMail({
-                        to: email,
-                        from: 'shop@node-complete.com',
-                        subject: 'signup succeeded!',
-                        html: `<div style="text-align:center; border: 1px solid black; padding: 30px;">
+        .then(result => {
+            res.redirect('/login');
+            return transporter.sendMail({
+                to: email,
+                from: 'shop@node-complete.com',
+                subject: 'signup succeeded!',
+                html: `<div style="text-align:center; border: 1px solid black; padding: 30px;">
                                     <h1>you successfully signed up!</h1>
                                     <br>
                                     <button style="background: blue">let's start</button>
                                 </div>`
-                    });
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            });
         })
         .catch(err => {
             console.log(err);
-        })
+        });
 }
 
 exports.postLogout = (req, res, next) => {
