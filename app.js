@@ -46,13 +46,16 @@ app.use((req, res, next) => {
     }
     User.findById(req.session.user._id)
         .then(user => {
+            if (!user) {
+                return next();
+            }
             req.user = user;
-            next()
+            next();
         })
         .catch(err => {
-            console.log(err);
+            throw new Error(err);
         });
-})
+});
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
