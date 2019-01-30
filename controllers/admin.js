@@ -10,7 +10,8 @@ exports.getAddProduct = (req, res, next) => {
         path: '/admin/add-product',
         editing: false,
         hasError: false,
-        errorMessage: null
+        errorMessage: null,
+        validationErrors: []
     });
     // res.sendFile(path.join(dirName, 'views', 'add-product.html'));
 };
@@ -34,7 +35,8 @@ exports.postAddProduct = (req, res, next) => {
                 price: price,
                 description: description
             },
-            errorMessage: errors.array()[0].msg
+            errorMessage: errors.array()[0].msg,
+            validationErrors: error.array()
         })
     }
 

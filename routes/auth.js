@@ -19,8 +19,8 @@ router.post('/login',
     [
         check('email')
         .isEmail()
-        .withMessage('enter a valid email addresss')
-        .normalizeEmail(),
+        .withMessage('enter a valid email addresss'),
+        // .normalizeEmail(),
         body('password', 'enter a alphanumeric password of min length 5')
         .isLength({
             min: 5
