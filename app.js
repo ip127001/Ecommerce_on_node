@@ -41,11 +41,13 @@ app.use(flash());
 
 app.use((req, res, next) => {
     // console.log('session user', req.session.user);
+    // throw new Error('Sync dummy');  
     if (!req.session.user) {
         return next();
     }
     User.findById(req.session.user._id)
         .then(user => {
+            //throw new Error(err);       
             if (!user) {
                 return next();
             }
@@ -53,9 +55,10 @@ app.use((req, res, next) => {
             next();
         })
         .catch(err => {
-            throw new Error(err);
+            next(new Error(err));
         });
 });
+// if throw error outside then()catch() then it redirect to error middleware, if use inside then() then use next(err)
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -77,7 +80,12 @@ app.get('/500', errorController.error500)
 app.use(errorController.error404);
 
 app.use((error, req, res, next) => {
-    res.redirect('/500')
+    // res.redirect('/500')
+    res.status(500).render('500', {
+        pageTitle: 'Server Error Page',
+        path: '/500',
+        isAuthenticated: req.session.isLoggedIn
+    });
 })
 
 mongoose
