@@ -73,7 +73,12 @@ app.use(authRoutes);
 
 
 app.get('/500', errorController.error500)
+
 app.use(errorController.error404);
+
+app.use((error, req, res, next) => {
+    res.redirect('/500')
+})
 
 mongoose
     .connect('mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop?retryWrites=true')
