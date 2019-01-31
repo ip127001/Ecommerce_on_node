@@ -47,9 +47,6 @@ router.post('/edit-product',
         })
         .trim(),
 
-        body('imageUrl', 'type the correct url')
-        .isURL(),
-
         body('price')
         .isFloat(),
 
