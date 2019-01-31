@@ -136,7 +136,7 @@ exports.getOrders = (req, res, next) => {
             "user.userId": req.user._id
         })
         .then(orders => {
-            console.log('orders are here \n', orders);
+            // console.log('orders are here \n', orders);
             res.render('shop/orders', {
                 path: '/orders',
                 pageTitle: 'your orders',
@@ -150,12 +150,28 @@ exports.getOrders = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
     const orderId = req.params.orderId;
-    const invoiceName = 'invoice-' + orderId + '.pdf';
-    const invoicePath = path.join('data', 'invoices', invoiceName)
-    fs.readFile(invoicePath, (err, data) => {
-        if (err) {
-            return next(err);
-        }
-        res.send(data);
-    })
+    Order.findById(orderId)
+        .then(order => {
+            if (!order) {
+                console.log("no order found to your account");
+                return next(new Error('no order found'))
+            }
+            if (order.user.userId === req.user._id) {
+                console.log("unauthorized for order invoice");
+                return next(new Error('unauthorized used'));
+            }
+            const invoiceName = 'invoice-' + orderId + '.pdf';
+            const invoicePath = path.join('data', 'invoices', invoiceName)
+            fs.readFile(invoicePath, (err, data) => {
+                if (err) {
+                    return next(err);
+                }
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader(
+                    'Content-Disposition',
+                    'inline; filename"' + invoiceName + '"');
+                res.send(data);
+            })
+        })
+        .catch(err => next(err))
 }
