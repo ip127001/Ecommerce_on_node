@@ -162,16 +162,40 @@ exports.getInvoice = (req, res, next) => {
             }
             const invoiceName = 'invoice-' + orderId + '.pdf';
             const invoicePath = path.join('data', 'invoices', invoiceName)
-            fs.readFile(invoicePath, (err, data) => {
-                if (err) {
-                    return next(err);
-                }
-                res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader(
-                    'Content-Disposition',
-                    'inline; filename"' + invoiceName + '"');
-                res.send(data);
-            })
+            // fs.readFile(invoicePath, (err, data) => {
+            //     if (err) {
+            //         return next(err);
+            //     }
+            //     res.setHeader('Content-Type', 'application/pdf');
+            //     res.setHeader(
+            //         'Content-Disposition',
+            //         'inline; filename"' + invoiceName + '"');
+            //     res.send(data);
+            // })
+            const file = fs.createReadStream(invoicePath);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader(
+                'Content-Disposition',
+                'inline; filename"' + invoiceName + '"');
+            file.pipe(res);
         })
         .catch(err => next(err))
 }
+
+
+
+
+
+/*
+call the pipe method to foreward the data that is read is with that stream to my response 
+because the response object is rightable stream
+and 
+you can use readable streams to pipe theier output to a rightable stream and response object happens to be the rightable stream.
+
+res will stream the data to browser and browser will download it step by step
+
+so node has to load only chunks of data not all at once.
+
+we forward the different chunks to browser which then is also able to concatenate the incoming data pieces into the final file.
+
+*/
