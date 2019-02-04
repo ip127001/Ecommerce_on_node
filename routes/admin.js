@@ -23,9 +23,6 @@ router.post('/add-product',
         })
         .trim(),
 
-        body('imageUrl', 'type the correct url')
-        .isURL(),
-
         body('price')
         .isFloat(),
 
@@ -49,9 +46,6 @@ router.post('/edit-product',
             min: 3
         })
         .trim(),
-
-        body('imageUrl', 'type the correct url')
-        .isURL(),
 
         body('price')
         .isFloat(),
