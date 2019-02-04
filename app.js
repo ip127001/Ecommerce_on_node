@@ -103,14 +103,14 @@ app.get('/500', errorController.error500)
 
 app.use(errorController.error404);
 
-app.use((error, req, res, next) => {
-    // res.redirect('/500')
-    res.status(500).render('500', {
-        pageTitle: 'Server Error Page',
-        path: '/500',
-        isAuthenticated: req.session.isLoggedIn
-    });
-})
+// app.use((error, req, res, next) => {
+//     // res.redirect('/500')
+//     res.status(500).render('500', {
+//         pageTitle: 'Server Error Page',
+//         path: '/500',
+//         isAuthenticated: req.session.isLoggedIn
+//     });
+// })
 
 mongoose
     .connect('mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop?retryWrites=true')
