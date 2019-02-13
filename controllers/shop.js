@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path')
+var stripe = require("stripe")("your secret key");
 
 const PDFDocument = require('pdfkit');
 
@@ -107,7 +108,11 @@ exports.getCart = (req, res, next) => {
                 products: products
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
 
 }
 
@@ -140,11 +145,24 @@ exports.postCartDeleteProduct = (req, res, next) => {
 }
 
 exports.postOrder = (req, res, next) => {
+    // Set your secret key: remember to change this to your live secret key in production
+    // See your keys here: https://dashboard.stripe.com/account/apikeys
+
+    // Token is created using Checkout or Elements!
+    // Get the payment token ID submitted by the form:
+    const token = req.body.stripeToken; // Using Express
+
+    console.log(token);
+    let totalSum = 0;
+
     req.user
         .populate('cart.items.productId')
         .execPopulate()
         .then(user => {
-            console.log(user);
+            user.cart.items.forEach(p => {
+                totalSum += p.quantity * p.productId.price
+            });
+
             const products = user.cart.items.map(item => {
                 return {
                     productData: {
@@ -165,13 +183,22 @@ exports.postOrder = (req, res, next) => {
             return order.save();
         })
         .then(result => {
-            return req.user.clearCart()
+            (async () => {
+                const charge = await stripe.charges.create({
+                    amount: totalSum * 100,
+                    currency: 'usd',
+                    source: 'tok_visa',
+                    receipt_email: 'rkumawat125@gmail.com',
+                });
+            })();
+
+            return req.user.clearCart();
         })
         .then(result => {
             res.redirect('/orders');
         })
         .catch(err => {
-            console.log('--error in postOrder module-- \n', err);
+            next(err);
         })
 }
 
@@ -251,7 +278,29 @@ exports.getInvoice = (req, res, next) => {
         })
 }
 
-
+exports.getCheckout = (req, res, next) => {
+    req.user
+        .populate('cart.items.productId')
+        .execPopulate()
+        .then(user => {
+            const products = user.cart.items;
+            let total = 0;
+            products.forEach(p => {
+                total += p.quantity * p.productId.price;
+            });
+            res.render('shop/checkout', {
+                path: '/checkout',
+                pageTitle: 'Checkout',
+                products: products,
+                totalSum: total
+            });
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+}
 
 
 

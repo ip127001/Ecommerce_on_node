@@ -12,6 +12,8 @@ const multer = require('multer');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
+const shopController = require('./controllers/shop');
+const isAuth = require('./middleware/is-auth');
 
 const MONGODB_URI = 'mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop';
 
@@ -60,7 +62,6 @@ app.use(session({ // cookie setting and reading for us in browser
     saveUninitialized: false,
     store: store
 }));
-app.use(csrfProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
@@ -90,6 +91,15 @@ const authRoutes = require('./routes/auth');
 
 app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.isLoggedIn;
+    next();
+})
+
+app.post('/create-order', isAuth, shopController.postOrder);
+
+app.use(csrfProtection);
+
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
     res.locals.csrfToken = req.csrfToken();
     next();
 })
@@ -103,14 +113,15 @@ app.get('/500', errorController.error500)
 
 app.use(errorController.error404);
 
-// app.use((error, req, res, next) => {
-//     // res.redirect('/500')
-//     res.status(500).render('500', {
-//         pageTitle: 'Server Error Page',
-//         path: '/500',
-//         isAuthenticated: req.session.isLoggedIn
-//     });
-// })
+app.use((error, req, res, next) => {
+    // res.redirect('/500')
+    console.log('error in app.js', error);
+    res.status(500).render('500', {
+        pageTitle: 'Server Error Page',
+        path: '/500',
+        isAuthenticated: req.session.isLoggedIn
+    });
+})
 
 mongoose
     .connect('mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop?retryWrites=true')
