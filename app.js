@@ -28,10 +28,8 @@ const store = new MongoDBStore({
     collection: 'sessions'
 })
 const csrfProtection = csrf();
-
 const privateKey = fs.readFileSync('server.key')
 const certificate = fs.readFileSync('server.cert')
-
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'images')
@@ -40,7 +38,6 @@ const fileStorage = multer.diskStorage({
         cb(null, new Date().toISOString() + '-' + file.originalname)
     }
 })
-
 const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'image/jpg' ||
         file.mimetype === 'image/png' ||
@@ -71,7 +68,6 @@ app.use(session({ // cookie setting and reading for us in browser
     store: store
 }));
 app.use(flash());
-
 app.use((req, res, next) => {
     // console.log('session user', req.session.user);
     // throw new Error('Sync dummy');  
@@ -98,10 +94,10 @@ const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
-
 app.use(helmet());
 app.use(compression());
 app.use(morgan('combined', {stream: accessLogStream}));
+
 
 app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.isLoggedIn;
