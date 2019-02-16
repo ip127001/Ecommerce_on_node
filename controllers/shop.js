@@ -202,7 +202,7 @@ exports.postOrder = (req, res, next) => {
             })();
 
             const htmlString = result.user.userId.cart.items.reduce((prev, item) => {
-                return prev + 'you have ordered "' + item.productId.title + '" of quantity ' + item.quantity + ' = $' + item.productId.price + '\n';
+                return prev + 'you have ordered "' + item.productId.title + '" of quantity ' + item.quantity + ' = $' + item.productId.price + '<br>';
             }, '');
 
             transporter.sendMail({
