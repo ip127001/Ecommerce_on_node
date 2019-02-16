@@ -126,6 +126,6 @@ app.use((error, req, res, next) => {
 mongoose
     .connect('mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop?retryWrites=true')
     .then(result => {
-        app.listen(3000);
+        app.listen(8080);
     })
     .catch(err => console.log(err));
