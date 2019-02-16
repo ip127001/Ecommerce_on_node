@@ -142,7 +142,7 @@ console.log(process.env.NODE_ENV);
 mongoose
     .connect(MONGODB_URI)
     .then(result => {
-        https.createServer({key: privateKey, cert: certificate}, app)
-        .listen(process.env.PORT || 3000);
+        // https.createServer({key: privateKey, cert: certificate}, app)
+        app.listen(process.env.PORT || 3000);
     })
     .catch(err => console.log(err));
