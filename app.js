@@ -15,7 +15,8 @@ const User = require('./models/user');
 const shopController = require('./controllers/shop');
 const isAuth = require('./middleware/is-auth');
 
-const MONGODB_URI = 'mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop';
+const MONGODB_URI = 
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@ecommerce-rs4wl.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}`;
 
 const app = express();
 const store = new MongoDBStore({
@@ -89,6 +90,8 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
+app.use(helmet());
+
 app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.isLoggedIn;
     next();
@@ -123,9 +126,11 @@ app.use((error, req, res, next) => {
     });
 })
 
+console.log(process.env.NODE_ENV);
+
 mongoose
-    .connect('mongodb+srv://rohit_kumawat:cunltC77NOGz1jqS@ecommerce-rs4wl.mongodb.net/shop?retryWrites=true')
+    .connect(MONGODB_URI)
     .then(result => {
-        app.listen(8080);
+        app.listen(process.env.PORT || 3000);
     })
     .catch(err => console.log(err));
