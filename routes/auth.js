@@ -51,8 +51,8 @@ router.post(
                     return Promise.reject('Email exists already, pick another one')
                 }
             })
-        })
-        .normalizeEmail(),
+        }),
+        // .normalizeEmail(),
         body(
             'password',
             'enter a password of length atleast 5 with numbers and text only'
