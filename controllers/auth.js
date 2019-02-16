@@ -10,7 +10,7 @@ const User = require('../models/user');
 
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
-        api_key: 'your api key'
+        api_key: process.env.EMAIL_API_KEY
     }
 }));
 
@@ -214,7 +214,6 @@ exports.postLogout = (req, res, next) => {
     })
 }
 
-
 exports.getReset = (req, res, next) => {
     let message = req.flash('error');
 
@@ -230,7 +229,6 @@ exports.getReset = (req, res, next) => {
         errorMessage: message
     });
 };
-
 
 exports.postReset = (req, res, next) => {
     crypto.randomBytes(32, (err, buffer) => {

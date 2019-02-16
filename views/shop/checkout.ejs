@@ -26,7 +26,7 @@
             <form action="/create-order" method="POST">
                 <script
                     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                    data-key="your publishable key"
+                    data-key="<%= process.env.STRIPE_PUB_KEY %>"
                     data-amount="<%= totalSum*100 %>"
                     data-name="Your order"
                     data-description="all the items you ordered"

@@ -1,6 +1,15 @@
 const fs = require('fs');
 const path = require('path')
-var stripe = require("stripe")(process.env.STRIPE_KEY);
+var stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
+
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+
+const transporter = nodemailer.createTransport(sendgridTransport({
+    auth: {
+        api_key: process.env.EMAIL_API_KEY
+    }
+}));
 
 const PDFDocument = require('pdfkit');
 
@@ -192,6 +201,19 @@ exports.postOrder = (req, res, next) => {
                 });
             })();
 
+            const htmlString = result.user.userId.cart.items.reduce((prev, item) => {
+                return prev + 'you have ordered "' + item.productId.title + '" of quantity ' + item.quantity + ' = $' + item.productId.price + '\n';
+            }, '');
+
+            transporter.sendMail({
+                to: result.user.email,
+                from: 'shop@node-complete.com',
+                subject: 'order placed',
+                html: `<p>You have placed an order</p>
+                <h1>${htmlString}</h1>
+                <h2>total price: ${totalSum}</h2>`
+            });
+            
             return req.user.clearCart();
         })
         .then(result => {

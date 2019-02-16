@@ -61,8 +61,10 @@ app.use(multer({
     storage: fileStorage,
     fileFilter: fileFilter
 }).single('image'));
+
 app.use(express.static(path.join(__dirname, '/public'))) // express static middleware
 app.use('/images', express.static(path.join(__dirname, '/images')))
+
 app.use(session({ // cookie setting and reading for us in browser
     secret: 'my secret',
     resave: false,
@@ -70,9 +72,11 @@ app.use(session({ // cookie setting and reading for us in browser
     store: store
 }));
 app.use(flash());
+
+
 app.use((req, res, next) => {
     // console.log('session user', req.session.user);
-    // throw new Error('Sync dummy');  
+    // throw new Error('Sync dummy');
     if (!req.session.user) {
         return next();
     }
@@ -91,9 +95,11 @@ app.use((req, res, next) => {
 });
 // if throw error outside then()catch() then it redirect to error middleware, if use inside then() then use next(err)
 
+
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
+
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
 app.use(helmet());
@@ -111,7 +117,6 @@ app.post('/create-order', isAuth, shopController.postOrder);
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isLoggedIn;
     res.locals.csrfToken = req.csrfToken();
     next();
 })
